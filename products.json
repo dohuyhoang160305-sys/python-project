@@ -1,0 +1,30 @@
+[
+    {
+        "id": "LT01",
+        "name": "ĐIỆN THOẠI",
+        "brand": "SAMSUNG",
+        "prince": "3400000",
+        "quantily": 2
+    },
+    {
+        "id": "LT02",
+        "name": "LAPTOP",
+        "brand": "ACER",
+        "prince": "34999000",
+        "quantily": 2
+    },
+    {
+        "id": "LT03",
+        "name": "máy tính bảng",
+        "brand": "xiaomi",
+        "prince": "340000",
+        "quantily": 1
+    },
+    {
+        "id": "LT04",
+        "name": "máy sấy tóc",
+        "brand": "panasonic",
+        "prince": "350000",
+        "quantily": 3
+    }
+]
