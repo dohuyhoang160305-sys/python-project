@@ -1,96 +1,85 @@
-def add_product(product):
-    print("===Thêm Sản Phẩm===")
-    ma = input("Nhập mã sản phẩm:")
-    ten = input("Nhập tên sản phẩm:")
-    thuong_hieu = input("Nhập tên thương hiệu:")
-    gia = int(input("Nhập giá:"))
-    so_luong = int(input("Nhập số lượng:"))
-    product = {"mã",ma,"tên",ten,"thương hiệu",thuong_hieu,"giá",gia,"số lượng",so_luong}
-    product.append(product)
-    print("Thêm sản phẩm thành công")
-def show_product(product):
-    print("===Danh Sách Sản Phẩm===")
-    if product == []:
-        print("Chưa có sản phẩm nào")
-    for product in product:
-        print("-----------------")
-        print("Mã sản phẩm:",product["mã"])
-        print("Tên sản phẩm:",product["tên"])
-        print("Tên thương hiệu:",product["thương hiệu"])
-        # một nháy được-sai
-        print("Giá:",product["giá"])
-        print("Số lượng:",product["số lượng"])
 import json
+import os
 
-FILE_NAME = "products.json"
-# load dữ liệu từ file
+FILENAME = "products.json"
+
 def load_data():
-    try:
-        with open(FILE_NAME,"r",encoding= "utf-8") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return[]
-# lưu dữ liệu vào file
+    if os.path.exists(FILENAME):
+        try:
+            with open(FILENAME, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if data: 
+                    return data
+        except (json.JSONDecodeError, FileNotFoundError):
+            pass
+
+    return [
+        {"id": "LT01", "name": "Laptop Gaming Acer Nitro 5", "brand": "Acer", "price": 22000000, "stock": 10},
+        {"id": "LT02", "name": "Macbook Air M2", "brand": "Apple", "price": 28000000, "stock": 5},
+        {"id": "LT03", "name": "Dell XPS 13", "brand": "Dell", "price": 35000000, "stock": 3},
+        {"id": "LT04", "name": "Asus Vivobook 15", "brand": "Asus", "price": 14500000, "stock": 15},
+        {"id": "LT05", "name": "HP Pavilion 14", "brand": "HP", "price": 16000000, "stock": 8}
+    ]
+
 def save_data(products):
-    with open(FILE_NAME,"w",encoding= "utf-8") as f:
-        json.dump(products,f,indent=4,ensure_ascii=False)
-# thêm sản phẩm
+    """Ghi danh sách sản phẩm vào file JSON."""
+    with open(FILENAME, 'w', encoding='utf-8') as f:
+        json.dump(products, f, ensure_ascii=False, indent=4)
+    print("\n[Hệ thống] Đã lưu dữ liệu thành công vào products.json!")
+
 def add_product(products):
-    new_id = f"LT{len(products)+1:02d}"
-    name = input("Nhập tên sản phẩm : ")
-    brand = input("Nhập tên thương hiệu : ")
-    prince = input("Nhập giá : ")
-    quantily = int(input("Nhập số lượng : "))
-    new_product = {
-        "id":new_id,
-        "name":name,
-        "brand":brand,
-        "prince":prince,
-        "quantily":quantily 
-    }
-    products.append(new_product)
-    print("Thêm sản phẩm thành công")
+    print("\n--- THÊM SẢN PHẨM MỚI ---")
+    new_id = f"LT{len(products) + 1:02d}"
+    name = input("Nhập tên sản phẩm: ")
+    brand = input("Nhập thương hiệu: ")
+    try:
+        price = int(input("Nhập giá: "))
+        stock = int(input("Nhập số lượng tồn: "))
+    except ValueError:
+        print("Lỗi: Giá/Số lượng phải là số!")
+        return products
+    
+    products.append({"id": new_id, "name": name, "brand": brand, "price": price, "stock": stock})
+    print(f"Đã thêm sản phẩm {new_id}!")
     return products
-# cập nhật sản phẩm
+
 def update_product(products):
-        
-    product_id = input("Nhập id cần cập nhật : ")
-    
-    for product in products:
-        if product["id"] == product_id:
-           product["Tên"] = input("Tên sản phẩm : ")
-           product["Thương hiệu"] = input("Tên thương hiệu : ")
-           product["Giá"] = input("Giá : ")
-           product["Số lượng"] = input("Số lượng : ")
-           print("Cập nhật thành công")
-           return
-    print("Không tìm thấy sản phẩm")
-# xóa sản phẩm
+    sid = input("Nhập mã ID : ").upper()
+    for p in products:
+        if p['id'] == sid:
+            p['name'] = input(f"Tên mới ({p['name']}): ") or p['name']
+            p['brand'] = input(f"Hãng mới ({p['brand']}): ") or p['brand']
+            try:
+                p['price'] = int(input(f"Giá mới ({p['price']}): ") or p['price'])
+                p['stock'] = int(input(f"Tồn kho mới ({p['stock']}): ") or p['stock'])
+            except ValueError: pass
+            print("Đã cập nhật!")
+            return products
+    print("Không tìm thấy!")
+    return products
+
 def delete_product(products):
-    product_id = input("Nhập id cần xóa : ")
-    
-    for product in products:
-        if product["id"] == product_id:
-            products.remove(product)
-            print("Đã xóa sản phẩm")
-            return
-# tìm kiếm theo tên 
-def search_all_product_by_name(products):
-    keyword = input("Nhập từ khóa tìm kiếm : ").lower()
-    
-    for product in products:
-        if keyword in product["name"].lower():
-            print(product)
-# hiển thị tất cả
+    sid = input("Nhập mã ID cần xóa: ").upper()
+    for i, p in enumerate(products):
+        if p['id'] == sid:
+            products.pop(i)
+            print("Đã xóa!")
+            return products
+    print("Không tìm thấy!")
+    return products
+
+def search_product_by_name(products):
+    kw = input("Nhập từ khóa tìm kiếm: ").lower()
+    results = [p for p in products if kw in p['name'].lower()]
+    display_all_products(results)
+
 def display_all_products(products):
     if not products:
-        print("Kho hàng trống")
+        print("\n[!] Kho hàng trống.")
         return
-    for product in products:
-        print("------------------------")
-        print("id : ",product["id"])
-        print("Tên : ",product["name"])
-        print("Thương hiệu : ",product["brand"])
-        print("Giá : ",product["prince"])
-        print("Số lượng : ",product["quantily"])
-        
+    print("\n" + "="*75)
+    print(f"{'ID':<6} | {'Tên Sản Phẩm':<30} | {'Hãng':<12} | {'Giá':<12} | {'Tồn'}")
+    print("-" * 75)
+    for p in products:
+        print(f"{p['id']:<6} | {p['name']:<30} | {p['brand']:<12} | {p['price']:<12,} | {p['stock']}")
+    print("="*75)
